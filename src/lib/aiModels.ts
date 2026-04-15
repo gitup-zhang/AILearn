@@ -79,9 +79,13 @@ export const AI_PROVIDERS: Record<AIProviderId, AIProviderDefinition> = {
 export const DEFAULT_TEXT_MODEL = 'minimax/MiniMax-M2.7';
 export const DEFAULT_STRUCTURED_MODEL = 'minimax/MiniMax-M2.7';
 export const DEFAULT_EMBEDDING_MODEL = 'zhipu/embedding-3';
-export const TEXT_MODEL_STORAGE_KEY = 'opensynapse.preferred-text-model';
-export const STRUCTURED_MODEL_STORAGE_KEY = 'opensynapse.preferred-structured-model';
-export const EMBEDDING_MODEL_STORAGE_KEY = 'opensynapse.preferred-embedding-model';
+export const TEXT_MODEL_STORAGE_KEY = 'ailearn.preferred-text-model';
+export const STRUCTURED_MODEL_STORAGE_KEY = 'ailearn.preferred-structured-model';
+export const EMBEDDING_MODEL_STORAGE_KEY = 'ailearn.preferred-embedding-model';
+
+const LEGACY_TEXT_MODEL_STORAGE_KEY = 'opensynapse.preferred-text-model';
+const LEGACY_STRUCTURED_MODEL_STORAGE_KEY = 'opensynapse.preferred-structured-model';
+const LEGACY_EMBEDDING_MODEL_STORAGE_KEY = 'opensynapse.preferred-embedding-model';
 
 export const AI_MODEL_OPTIONS: AIModelOption[] = [
   {
@@ -358,6 +362,33 @@ function canUseLocalStorage(): boolean {
   return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
 }
 
+function getStoredPreference(primaryKey: string, legacyKey: string): string | null {
+  if (!canUseLocalStorage()) {
+    return null;
+  }
+
+  const current = window.localStorage.getItem(primaryKey);
+  if (current) {
+    return current;
+  }
+
+  const legacy = window.localStorage.getItem(legacyKey);
+  if (!legacy) {
+    return null;
+  }
+
+  window.localStorage.setItem(primaryKey, legacy);
+  return legacy;
+}
+
+function setStoredPreference(primaryKey: string, value: string): void {
+  if (!canUseLocalStorage()) {
+    return;
+  }
+
+  window.localStorage.setItem(primaryKey, value);
+}
+
 export function inferProviderFromModelName(modelName: string): AIProviderId {
   if (modelName.startsWith('gpt-')) return 'openai';
   if (modelName.startsWith('MiniMax-')) return 'minimax';
@@ -429,7 +460,7 @@ export function getPreferredTextModel(): string {
     return DEFAULT_TEXT_MODEL;
   }
 
-  return normalizeModelId(window.localStorage.getItem(TEXT_MODEL_STORAGE_KEY));
+  return normalizeModelId(getStoredPreference(TEXT_MODEL_STORAGE_KEY, LEGACY_TEXT_MODEL_STORAGE_KEY));
 }
 
 export function getPreferredStructuredModel(): string {
@@ -437,7 +468,9 @@ export function getPreferredStructuredModel(): string {
     return DEFAULT_STRUCTURED_MODEL;
   }
 
-  return normalizeModelId(window.localStorage.getItem(STRUCTURED_MODEL_STORAGE_KEY));
+  return normalizeModelId(
+    getStoredPreference(STRUCTURED_MODEL_STORAGE_KEY, LEGACY_STRUCTURED_MODEL_STORAGE_KEY)
+  );
 }
 
 export function getPreferredEmbeddingModel(): string {
@@ -445,7 +478,7 @@ export function getPreferredEmbeddingModel(): string {
     return DEFAULT_EMBEDDING_MODEL;
   }
 
-  const saved = window.localStorage.getItem(EMBEDDING_MODEL_STORAGE_KEY);
+  const saved = getStoredPreference(EMBEDDING_MODEL_STORAGE_KEY, LEGACY_EMBEDDING_MODEL_STORAGE_KEY);
   if (!saved) {
     return DEFAULT_EMBEDDING_MODEL;
   }
@@ -458,17 +491,13 @@ export function getPreferredEmbeddingModel(): string {
 
 export function setPreferredTextModel(modelId: string): string {
   const normalized = normalizeModelId(modelId);
-  if (canUseLocalStorage()) {
-    window.localStorage.setItem(TEXT_MODEL_STORAGE_KEY, normalized);
-  }
+  setStoredPreference(TEXT_MODEL_STORAGE_KEY, normalized);
   return normalized;
 }
 
 export function setPreferredStructuredModel(modelId: string): string {
   const normalized = normalizeModelId(modelId);
-  if (canUseLocalStorage()) {
-    window.localStorage.setItem(STRUCTURED_MODEL_STORAGE_KEY, normalized);
-  }
+  setStoredPreference(STRUCTURED_MODEL_STORAGE_KEY, normalized);
   return normalized;
 }
 
@@ -478,9 +507,7 @@ export function setPreferredEmbeddingModel(modelId: string): string {
     ? normalized
     : DEFAULT_EMBEDDING_MODEL;
 
-  if (canUseLocalStorage()) {
-    window.localStorage.setItem(EMBEDDING_MODEL_STORAGE_KEY, safeValue);
-  }
+  setStoredPreference(EMBEDDING_MODEL_STORAGE_KEY, safeValue);
   return safeValue;
 }
 

@@ -147,7 +147,7 @@ async function startServer() {
   app.get('/.well-known/openclaw', (req, res) => {
     res.json({
       mcp_endpoint: `${getBaseUrl()}/mcp`,
-      name: 'opensynapse',
+      name: 'ailearn',
       version: '1.0.0',
       description: 'AI驱动的知识复利系统 - 智能笔记与闪卡复习',
       features: ['save', 'import', 'review', 'search'],
@@ -338,7 +338,7 @@ async function startServer() {
 
     res.json({
       success: true,
-      message: hadOwnCredentials ? 'OpenSynapse 专属 OpenAI OAuth 凭证已清除。' : '当前没有 OpenSynapse 专属 OpenAI OAuth 凭证。',
+      message: hadOwnCredentials ? 'AILearn 专属 OpenAI OAuth 凭证已清除。' : '当前没有 AILearn 专属 OpenAI OAuth 凭证。',
     });
   });
 

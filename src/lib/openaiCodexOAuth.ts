@@ -4,7 +4,7 @@ import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 
-export type OpenAICodexAuthSource = 'opensynapse' | 'codex';
+export type OpenAICodexAuthSource = 'ailearn' | 'codex';
 
 export type OpenAICodexStoredCredentials = {
   auth_mode: 'oauth';
@@ -47,10 +47,14 @@ export const OPENAI_CODEX_OAUTH = {
   TOKEN_URL: 'https://auth.openai.com/oauth/token',
   REDIRECT_URI: 'http://localhost:1455/auth/callback',
   SCOPE: 'openid profile email offline_access',
-  PRIMARY_DIR: path.join(os.homedir(), '.opensynapse'),
-  PRIMARY_FILE: path.join(os.homedir(), '.opensynapse', 'openai-auth.json'),
+  PRIMARY_DIR: path.join(os.homedir(), '.ailearn'),
+  PRIMARY_FILE: path.join(os.homedir(), '.ailearn', 'openai-auth.json'),
   SHARED_CODEX_FILE: path.join(os.homedir(), '.codex', 'auth.json'),
 } as const;
+
+const LEGACY_PRIMARY_FILES = [
+  path.join(os.homedir(), '.opensynapse', 'openai-auth.json'),
+];
 
 const DEFAULT_SUCCESS_HTML = `<!doctype html>
 <html lang="zh-CN">
@@ -103,7 +107,7 @@ const DEFAULT_SUCCESS_HTML = `<!doctype html>
     <div class="card">
       <div class="badge">✓</div>
       <h1>认证成功</h1>
-      <p>OpenAI 账号已连接。你可以关闭此窗口并回到 OpenSynapse。</p>
+      <p>OpenAI 账号已连接。你可以关闭此窗口并回到 AILearn。</p>
     </div>
   </body>
 </html>`;
@@ -280,9 +284,11 @@ function toStoredCredentialsFromTokenResponse(
 }
 
 export async function loadOpenAICodexSession(): Promise<OpenAICodexSession | null> {
-  const primary = await readStoredCredentials(OPENAI_CODEX_OAUTH.PRIMARY_FILE);
-  if (primary) {
-    return toSession(primary, 'opensynapse');
+  for (const filePath of [OPENAI_CODEX_OAUTH.PRIMARY_FILE, ...LEGACY_PRIMARY_FILES]) {
+    const primary = await readStoredCredentials(filePath);
+    if (primary) {
+      return toSession(primary, 'ailearn');
+    }
   }
 
   const shared = await readStoredCredentials(OPENAI_CODEX_OAUTH.SHARED_CODEX_FILE);
@@ -299,12 +305,18 @@ export async function saveOpenAICodexCredentials(credentials: OpenAICodexStoredC
 }
 
 export async function clearOpenAICodexCredentials(): Promise<boolean> {
-  try {
-    await fs.unlink(OPENAI_CODEX_OAUTH.PRIMARY_FILE);
-    return true;
-  } catch {
-    return false;
+  let removed = false;
+
+  for (const filePath of [OPENAI_CODEX_OAUTH.PRIMARY_FILE, ...LEGACY_PRIMARY_FILES]) {
+    try {
+      await fs.unlink(filePath);
+      removed = true;
+    } catch {
+      // ignore
+    }
   }
+
+  return removed;
 }
 
 export async function refreshOpenAICodexSession(
@@ -318,7 +330,7 @@ export async function refreshOpenAICodexSession(
 
   const refreshed = toStoredCredentialsFromTokenResponse(tokenResponse, session.refreshToken);
   await saveOpenAICodexCredentials(refreshed);
-  return toSession(refreshed, 'opensynapse');
+  return toSession(refreshed, 'ailearn');
 }
 
 export async function getValidOpenAICodexSession(): Promise<OpenAICodexSession | null> {

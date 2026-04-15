@@ -13,7 +13,7 @@ interface ProductConfig {
 
 const PRODUCTS: Record<string, ProductConfig> = {
   premium_lifetime: {
-    subject: 'OpenSynapse Premium（终身）',
+    subject: 'AILearn Premium（终身）',
     amount: '99.00',
     body: '解锁所有高级功能，一次购买永久使用',
   },

@@ -20,4 +20,5 @@ data.json
 
 *.pem
 *.key
+ailearn-deploy.tar.gz
 opensynapse-deploy.tar.gz

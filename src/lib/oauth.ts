@@ -17,12 +17,14 @@ import { URL, URLSearchParams } from 'node:url';
 import { OAuth2Client } from 'google-auth-library';
 
 const GEMINI_CLI_CLIENT_ID_KEYS = [
+  'AILEARN_GEMINI_OAUTH_CLIENT_ID',
   'OPENSYNAPSE_GEMINI_OAUTH_CLIENT_ID',
   'GEMINI_CLI_OAUTH_CLIENT_ID',
   'OPENCLAW_GEMINI_OAUTH_CLIENT_ID',
 ];
 
 const GEMINI_CLI_CLIENT_SECRET_KEYS = [
+  'AILEARN_GEMINI_OAUTH_CLIENT_SECRET',
   'OPENSYNAPSE_GEMINI_OAUTH_CLIENT_SECRET',
   'GEMINI_CLI_OAUTH_CLIENT_SECRET',
   'OPENCLAW_GEMINI_OAUTH_CLIENT_SECRET',
@@ -33,6 +35,18 @@ const LEGACY_CLIENT_SECRET_KEYS = ['GOOGLE_CLIENT_SECRET'];
 
 const TIER_FREE = 'free-tier';
 const TIER_LEGACY = 'legacy-tier';
+const PRIMARY_CREDENTIALS_PATH = path.join(os.homedir(), '.ailearn', 'credentials.json');
+const LEGACY_CREDENTIALS_PATHS = [
+  path.join(os.homedir(), '.opensynapse', 'credentials.json'),
+];
+
+function getCredentialLookupPaths(): string[] {
+  return [PRIMARY_CREDENTIALS_PATH, ...LEGACY_CREDENTIALS_PATHS];
+}
+
+export function getExistingCredentialsPath(): string | null {
+  return getCredentialLookupPaths().find((candidate) => existsSync(candidate)) ?? null;
+}
 
 export const OAUTH_CONFIG = {
   PORT: 3088,
@@ -47,7 +61,7 @@ export const OAUTH_CONFIG = {
     'https://www.googleapis.com/auth/userinfo.profile',
   ],
   getCredentialsPath(): string {
-    return path.join(os.homedir(), '.opensynapse', 'credentials.json');
+    return PRIMARY_CREDENTIALS_PATH;
   },
 };
 
@@ -236,7 +250,7 @@ export function resolveOAuthClientConfig(): OAuthClientConfig {
   }
 
   throw new Error(
-    '未找到 Gemini CLI OAuth client。请安装 gemini CLI，或配置 OPENSYNAPSE_GEMINI_OAUTH_CLIENT_ID。'
+    '未找到 Gemini CLI OAuth client。请安装 gemini CLI，或配置 AILEARN_GEMINI_OAUTH_CLIENT_ID（也兼容 OPENSYNAPSE_GEMINI_OAUTH_CLIENT_ID）。'
   );
 }
 
@@ -320,7 +334,7 @@ function getSuccessHtml(): string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>认证成功 - OpenSynapse</title>
+    <title>认证成功 - AILearn</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -389,7 +403,7 @@ function getErrorHtml(message: string): string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>认证失败 - OpenSynapse</title>
+    <title>认证失败 - AILearn</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -459,7 +473,7 @@ function getCodeAssistHeaders(accessToken: string): Record<string, string> {
     Authorization: `Bearer ${accessToken}`,
     'Content-Type': 'application/json',
     'User-Agent': 'google-api-nodejs-client/9.15.1',
-    'X-Goog-Api-Client': 'gl-node/opensynapse',
+    'X-Goog-Api-Client': 'gl-node/ailearn',
   };
 }
 
@@ -783,24 +797,26 @@ export async function saveCredentials(credentials: OAuthCredentials): Promise<vo
 }
 
 export async function loadCredentials(): Promise<OAuthCredentials | null> {
-  const credPath = OAUTH_CONFIG.getCredentialsPath();
-
-  try {
-    const data = await fs.readFile(credPath, 'utf-8');
-    return JSON.parse(data) as OAuthCredentials;
-  } catch {
-    return null;
+  for (const credPath of getCredentialLookupPaths()) {
+    try {
+      const data = await fs.readFile(credPath, 'utf-8');
+      return JSON.parse(data) as OAuthCredentials;
+    } catch {
+      // Try the next compatible path.
+    }
   }
+
+  return null;
 }
 
 export async function deleteCredentials(): Promise<void> {
-  const credPath = OAUTH_CONFIG.getCredentialsPath();
-
-  try {
-    await fs.unlink(credPath);
-    console.log('[OAuth] 凭证已删除');
-  } catch {
-    // ignore
+  for (const credPath of getCredentialLookupPaths()) {
+    try {
+      await fs.unlink(credPath);
+      console.log(`[OAuth] 凭证已删除: ${credPath}`);
+    } catch {
+      // ignore
+    }
   }
 }
 

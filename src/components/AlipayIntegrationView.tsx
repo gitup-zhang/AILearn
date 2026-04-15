@@ -149,7 +149,7 @@ export function AlipayIntegrationView() {
             </div>
             <h1 className="text-3xl font-bold text-gray-900">会员订阅</h1>
           </div>
-          <p className="text-gray-600">解锁 OpenSynapse 全部高级功能</p>
+          <p className="text-gray-600">解锁 AILearn 全部高级功能</p>
         </div>
 
         {/* Premium status banner */}

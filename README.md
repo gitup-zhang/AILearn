@@ -1,4 +1,4 @@
-﻿# AIlearn
+﻿# AILearn
 
 ## 技术栈
 
@@ -48,7 +48,7 @@ npm run cli:auth
 
 ```bash
 BETTER_AUTH_SECRET=your-secret
-DATABASE_URL=postgresql://opensynapse:password@localhost:5432/opensynapse
+DATABASE_URL=postgresql://ailearn:password@localhost:5432/ailearn
 CHROMA_URL=http://localhost:8000
 ```
 

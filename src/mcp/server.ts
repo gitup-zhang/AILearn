@@ -17,7 +17,7 @@ import {
 
 const server = new Server(
   {
-    name: 'opensynapse',
+    name: 'ailearn',
     version: '1.0.0',
   },
   {
@@ -31,8 +31,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
-        name: 'opensynapse_connect',
-        description: 'Connect to OpenSynapse and authenticate',
+        name: 'ailearn_connect',
+        description: 'Connect to AILearn and authenticate',
         inputSchema: {
           type: 'object',
           properties: {
@@ -46,8 +46,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       {
-        name: 'opensynapse_save',
-        description: 'Save content to OpenSynapse',
+        name: 'ailearn_save',
+        description: 'Save content to AILearn',
         inputSchema: {
           type: 'object',
           properties: {
@@ -58,7 +58,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       {
-        name: 'opensynapse_import',
+        name: 'ailearn_import',
         description: 'Import conversation',
         inputSchema: {
           type: 'object',
@@ -70,7 +70,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       {
-        name: 'opensynapse_review',
+        name: 'ailearn_review',
         description: 'Get flashcards due for review',
         inputSchema: {
           type: 'object',
@@ -80,7 +80,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       {
-        name: 'opensynapse_search',
+        name: 'ailearn_search',
         description: 'Search notes',
         inputSchema: {
           type: 'object',
@@ -195,16 +195,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
   switch (name) {
+    case 'ailearn_connect':
     case 'opensynapse_connect':
       return {
         content: [
           {
             type: 'text',
-            text: JSON.stringify({ success: true, message: 'Connected to OpenSynapse' }),
+            text: JSON.stringify({ success: true, message: 'Connected to AILearn' }),
           },
         ],
       };
 
+    case 'ailearn_save':
     case 'opensynapse_save':
       return {
         content: [
@@ -215,6 +217,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         ],
       };
 
+    case 'ailearn_import':
     case 'opensynapse_import':
       return {
         content: [
@@ -225,6 +228,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         ],
       };
 
+    case 'ailearn_review':
     case 'opensynapse_review':
       return {
         content: [
@@ -235,6 +239,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         ],
       };
 
+    case 'ailearn_search':
     case 'opensynapse_search':
       return {
         content: [

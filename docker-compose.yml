@@ -3,24 +3,24 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: opensynapse-postgres
+    container_name: ailearn-postgres
     environment:
-      POSTGRES_USER: opensynapse
+      POSTGRES_USER: ailearn
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: opensynapse
+      POSTGRES_DB: ailearn
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U opensynapse"]
+      test: ["CMD-SHELL", "pg_isready -U ailearn"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   chroma:
     image: chromadb/chroma:latest
-    container_name: opensynapse-chroma
+    container_name: ailearn-chroma
     ports:
       - "8000:8000"
     volumes:

@@ -232,7 +232,7 @@ export default function LoginSelection({ onSocialLogin, onAuthError }: LoginSele
                 <div className="relative w-20 h-20 rounded-2xl bg-secondary border border-border-main flex items-center justify-center shadow-lg">
                   <img 
                     src="/logo.png" 
-                    alt="OpenSynapse" 
+                    alt="AILearn" 
                     className="w-14 h-14 object-contain"
                   />
                 </div>
@@ -257,7 +257,7 @@ export default function LoginSelection({ onSocialLogin, onAuthError }: LoginSele
                 </motion.h1>
               </AnimatePresence>
               <p className="text-text-sub text-sm leading-relaxed">
-                {isRegistering ? '填写以下信息注册新账号' : showEmailLogin ? '使用邮箱和密码登录' : '选择一种方式登录 OpenSynapse'}
+                {isRegistering ? '填写以下信息注册新账号' : showEmailLogin ? '使用邮箱和密码登录' : '选择一种方式登录 AILearn'}
               </p>
             </motion.div>
 

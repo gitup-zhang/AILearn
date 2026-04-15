@@ -91,21 +91,32 @@ type ResolvedProviderCredentials = {
   baseUrl: string | null;
 };
 
+function getHeaderValue(req: express.Request, names: string[]): string | null {
+  for (const name of names) {
+    const value = req.headers[name];
+    if (typeof value === 'string' && value.trim()) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
 function getRequestSuppliedCredentials(
   req: express.Request,
   provider: SupportedProvider
 ): ResolvedProviderCredentials | null {
-  const requestProvider = typeof req.headers['x-opensynapse-provider'] === 'string'
-    ? req.headers['x-opensynapse-provider']
-    : null;
+  const requestProvider = getHeaderValue(req, ['x-ailearn-provider', 'x-opensynapse-provider']);
   if (requestProvider !== provider) {
     return null;
   }
 
-  const apiKeyHeader = req.headers['x-opensynapse-provider-api-key'];
-  const baseUrlHeader = req.headers['x-opensynapse-provider-base-url'];
-  const apiKey = typeof apiKeyHeader === 'string' ? normalizeApiKey(apiKeyHeader) : null;
-  const baseUrl = typeof baseUrlHeader === 'string' ? normalizeBaseUrl(baseUrlHeader) : null;
+  const apiKey = normalizeApiKey(
+    getHeaderValue(req, ['x-ailearn-provider-api-key', 'x-opensynapse-provider-api-key'])
+  );
+  const baseUrl = normalizeBaseUrl(
+    getHeaderValue(req, ['x-ailearn-provider-base-url', 'x-opensynapse-provider-base-url'])
+  );
 
   if (!apiKey) {
     return null;

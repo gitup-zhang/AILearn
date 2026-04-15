@@ -28,7 +28,7 @@ export default function DashboardView({ notes, flashcards, chatSessions, onStart
     setIsExporting(true);
     try {
       const zip = new JSZip();
-      const folder = zip.folder("synapse-export");
+      const folder = zip.folder("ailearn-export");
       
       notes.forEach(note => {
         const relatedTitles = note.relatedIds
@@ -63,7 +63,7 @@ ${flashcards
       });
 
       const content = await zip.generateAsync({ type: "blob" });
-      saveAs(content, `synapse-backup-${new Date().toISOString().split('T')[0]}.zip`);
+      saveAs(content, `ailearn-backup-${new Date().toISOString().split('T')[0]}.zip`);
     } catch (error) {
       console.error("Export failed:", error);
     } finally {
@@ -209,7 +209,7 @@ ${flashcards
     <div className="h-full overflow-y-auto p-4 md:p-6 max-w-6xl mx-auto w-full space-y-6 scrollbar-hide">
       <header className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-text-main">Synapse 突触</h2>
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-text-main">AILearn</h2>
           <p className="text-xs md:text-sm text-text-muted">实时监控你的知识网络与大脑负荷。</p>
         </div>
         <button

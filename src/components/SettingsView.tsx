@@ -57,7 +57,7 @@ type ProviderStatus = {
 
 type OpenAIOAuthStatus = {
   configured: boolean;
-  source: 'opensynapse' | 'codex' | null;
+  source: 'ailearn' | 'codex' | null;
   email: string | null;
   accountId: string | null;
   expiresAt: number | null;

@@ -17,7 +17,7 @@ dotenv.config({ path: '.env.local' });
 const API_URL = process.env.APP_URL || 'http://localhost:3000';
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
 const GOOGLE_CLOUD_PROJECT = process.env.GOOGLE_CLOUD_PROJECT;
-const CLI_MODEL = process.env.OPENSYNAPSE_CLI_MODEL || DEFAULT_TEXT_MODEL;
+const CLI_MODEL = process.env.AILEARN_CLI_MODEL || process.env.OPENSYNAPSE_CLI_MODEL || DEFAULT_TEXT_MODEL;
 
 type GenerateContentResult = { text: string };
 type AIClient = {
@@ -169,7 +169,7 @@ async function processFile(filePath: string) {
 }
 
 function showHelp() {
-  console.log('OpenSynapse CLI\n');
+  console.log('AILearn CLI\n');
   console.log('用法:');
   console.log('  npx tsx scripts/cli.ts <command> [options]\n');
   console.log('命令:');

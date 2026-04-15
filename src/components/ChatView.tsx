@@ -874,7 +874,7 @@ await new Promise(resolve => setTimeout(resolve, 400));
                 <h2 className="text-xl font-bold tracking-tight">
                   {currentPersona.name} {showHiddenPersonas && <span className="text-purple-500 text-xs ml-1 opacity-60">· 隐</span>}
                 </h2>
-                <p className="text-[10px] text-text-muted font-bold opacity-60 uppercase tracking-widest leading-none">OpenSynapse AI 导师系统</p>
+                <p className="text-[10px] text-text-muted font-bold opacity-60 uppercase tracking-widest leading-none">AILearn AI 导师系统</p>
               </div>
             </div>
           </div>

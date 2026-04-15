@@ -123,10 +123,10 @@ async function getAiRequestHeadersForModel(model?: string | null): Promise<Recor
       return headers;
     }
 
-    headers['X-OpenSynapse-Provider'] = parsed.provider;
-    headers['X-OpenSynapse-Provider-Api-Key'] = providerConfig.apiKey;
+    headers['X-AILearn-Provider'] = parsed.provider;
+    headers['X-AILearn-Provider-Api-Key'] = providerConfig.apiKey;
     if (providerConfig.baseUrl?.trim()) {
-      headers['X-OpenSynapse-Provider-Base-Url'] = providerConfig.baseUrl.trim();
+      headers['X-AILearn-Provider-Base-Url'] = providerConfig.baseUrl.trim();
     }
   } catch (error) {
     console.warn('[AI] Failed to attach user provider credentials:', error);

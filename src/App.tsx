@@ -438,10 +438,10 @@ export default function App() {
       <div className="h-screen bg-primary flex flex-col items-center justify-center gap-6">
         <div className="w-24 h-24 rounded-3xl bg-secondary overflow-hidden flex items-center justify-center animate-pulse shadow-2xl border border-border-main relative">
           <div className="absolute inset-0 bg-accent/5 animate-pulse" />
-          <img src="/logo.png" className="w-16 h-16 object-contain relative z-10" alt="OpenSynapse Logo" />
+          <img src="/logo.png" className="w-16 h-16 object-contain relative z-10" alt="AILearn Logo" />
         </div>
         <div className="flex flex-col items-center gap-2">
-          <p className="text-xs font-black uppercase tracking-[0.4em] text-accent animate-pulse">Synapse</p>
+          <p className="text-xs font-black uppercase tracking-[0.4em] text-accent animate-pulse">AILearn</p>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted opacity-40">正在同步突触资产...</p>
         </div>
       </div>
@@ -521,7 +521,7 @@ export default function App() {
             "font-bold text-lg tracking-tight group-hover:text-accent transition-colors",
             showHiddenPersonas && "text-purple-500"
           )}>
-            Synapse {showHiddenPersonas ? '· 隐' : '突触'}
+            AILearn {showHiddenPersonas ? '· 隐' : '突触'}
           </span>
         </div>
 

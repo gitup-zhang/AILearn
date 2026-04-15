@@ -2,6 +2,7 @@ import { exec } from 'node:child_process';
 import dotenv from 'dotenv';
 import {
   deleteCredentials,
+  getExistingCredentialsPath,
   getValidAccessToken,
   isCredentialsCompatible,
   isTokenExpired,
@@ -13,11 +14,13 @@ import {
 
 dotenv.config({ path: '.env.local' });
 
-const CREDENTIALS_PATH = OAUTH_CONFIG.getCredentialsPath();
+function getCredentialsDisplayPath() {
+  return getExistingCredentialsPath() || OAUTH_CONFIG.getCredentialsPath();
+}
 
 export async function handleLogin() {
   try {
-    console.log('OpenSynapse Gemini CLI 认证\n');
+    console.log('AILearn Gemini CLI 认证\n');
 
     const clientConfig = resolveOAuthClientConfig();
     console.log(`[Auth] OAuth client 来源: ${clientConfig.source}`);
@@ -42,7 +45,7 @@ export async function handleLogin() {
     });
 
     console.log('\n认证成功');
-    console.log(`凭证已保存到: ${CREDENTIALS_PATH}`);
+    console.log(`凭证已保存到: ${getCredentialsDisplayPath()}`);
     console.log(`Access Token 过期时间: ${new Date(credentials.expires_at).toLocaleString()}`);
     if (credentials.email) {
       console.log(`账号: ${credentials.email}`);
@@ -78,7 +81,7 @@ export async function handleStatus() {
     }
 
     console.log('已登录');
-    console.log(`凭证路径: ${CREDENTIALS_PATH}`);
+      console.log(`凭证路径: ${getCredentialsDisplayPath()}`);
     console.log(`Token 类型: ${credentials.token_type}`);
     console.log(`授权范围: ${credentials.scope}`);
     if (credentials.email) {
@@ -124,7 +127,7 @@ export async function getAccessToken(): Promise<string | null> {
 }
 
 export function showAuthHelp() {
-  console.log('OpenSynapse 认证管理\n');
+  console.log('AILearn 认证管理\n');
   console.log('用法:');
   console.log('  npx tsx cli.ts auth <command>\n');
   console.log('命令:');
